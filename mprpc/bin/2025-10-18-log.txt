@@ -1,0 +1,16 @@
+19:54:28=>[error]=>first log message!
+19:54:28=>[error]=>/home/jdw/projects/mprpc/example/callee/friendservice.cc:main:48
+19:57:41=>[info]=>first log message!
+19:57:41=>[info]=>/home/jdw/projects/mprpc/example/callee/friendservice.cc:main:48
+19:57:41=>[info]=>service_name:FriendServiceRpc
+19:57:41=>[info]=>method_name:GetFriendList
+20:4:57=>[info]=>first log message!
+20:4:57=>[info]=>/home/jdw/projects/mprpc/example/callee/friendservice.cc:main:48
+20:4:57=>[info]=>service_name:FriendServiceRpc
+20:4:57=>[info]=>method_name:GetFriendList
+20:7:6=>[error]=>first log message!
+20:7:6=>[error]=>/home/jdw/projects/mprpc/example/callee/friendservice.cc:main:48
+20:9:3=>[error]=>first log message!
+20:9:3=>[info]=>/home/jdw/projects/mprpc/example/callee/friendservice.cc:main:48
+20:9:3=>[info]=>service_name:FriendServiceRpc
+20:9:3=>[info]=>method_name:GetFriendList

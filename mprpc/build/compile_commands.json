@@ -1,0 +1,62 @@
+[
+{
+  "directory": "/home/jdw/projects/mprpc/build/src",
+  "command": "/usr/bin/g++   -I/home/jdw/projects/mprpc/src/include -I\"/home/jdw/projects/mprpc/(\" -I\"/home/jdw/projects/mprpc/)\" -I/home/jdw/projects/mprpc/example  -g   -o CMakeFiles/mprpc.dir/mprpcapplication.cc.o -c /home/jdw/projects/mprpc/src/mprpcapplication.cc",
+  "file": "/home/jdw/projects/mprpc/src/mprpcapplication.cc"
+},
+{
+  "directory": "/home/jdw/projects/mprpc/build/src",
+  "command": "/usr/bin/g++   -I/home/jdw/projects/mprpc/src/include -I\"/home/jdw/projects/mprpc/(\" -I\"/home/jdw/projects/mprpc/)\" -I/home/jdw/projects/mprpc/example  -g   -o CMakeFiles/mprpc.dir/mprpcconfig.cc.o -c /home/jdw/projects/mprpc/src/mprpcconfig.cc",
+  "file": "/home/jdw/projects/mprpc/src/mprpcconfig.cc"
+},
+{
+  "directory": "/home/jdw/projects/mprpc/build/src",
+  "command": "/usr/bin/g++   -I/home/jdw/projects/mprpc/src/include -I\"/home/jdw/projects/mprpc/(\" -I\"/home/jdw/projects/mprpc/)\" -I/home/jdw/projects/mprpc/example  -g   -o CMakeFiles/mprpc.dir/rpcheader.pb.cc.o -c /home/jdw/projects/mprpc/src/rpcheader.pb.cc",
+  "file": "/home/jdw/projects/mprpc/src/rpcheader.pb.cc"
+},
+{
+  "directory": "/home/jdw/projects/mprpc/build/src",
+  "command": "/usr/bin/g++   -I/home/jdw/projects/mprpc/src/include -I\"/home/jdw/projects/mprpc/(\" -I\"/home/jdw/projects/mprpc/)\" -I/home/jdw/projects/mprpc/example  -g   -o CMakeFiles/mprpc.dir/rpcprovider.cc.o -c /home/jdw/projects/mprpc/src/rpcprovider.cc",
+  "file": "/home/jdw/projects/mprpc/src/rpcprovider.cc"
+},
+{
+  "directory": "/home/jdw/projects/mprpc/build/src",
+  "command": "/usr/bin/g++   -I/home/jdw/projects/mprpc/src/include -I\"/home/jdw/projects/mprpc/(\" -I\"/home/jdw/projects/mprpc/)\" -I/home/jdw/projects/mprpc/example  -g   -o CMakeFiles/mprpc.dir/mprpcchannel.cc.o -c /home/jdw/projects/mprpc/src/mprpcchannel.cc",
+  "file": "/home/jdw/projects/mprpc/src/mprpcchannel.cc"
+},
+{
+  "directory": "/home/jdw/projects/mprpc/build/src",
+  "command": "/usr/bin/g++   -I/home/jdw/projects/mprpc/src/include -I\"/home/jdw/projects/mprpc/(\" -I\"/home/jdw/projects/mprpc/)\" -I/home/jdw/projects/mprpc/example  -g   -o CMakeFiles/mprpc.dir/mprpccontroller.cc.o -c /home/jdw/projects/mprpc/src/mprpccontroller.cc",
+  "file": "/home/jdw/projects/mprpc/src/mprpccontroller.cc"
+},
+{
+  "directory": "/home/jdw/projects/mprpc/build/src",
+  "command": "/usr/bin/g++   -I/home/jdw/projects/mprpc/src/include -I\"/home/jdw/projects/mprpc/(\" -I\"/home/jdw/projects/mprpc/)\" -I/home/jdw/projects/mprpc/example  -g   -o CMakeFiles/mprpc.dir/logger.cc.o -c /home/jdw/projects/mprpc/src/logger.cc",
+  "file": "/home/jdw/projects/mprpc/src/logger.cc"
+},
+{
+  "directory": "/home/jdw/projects/mprpc/build/src",
+  "command": "/usr/bin/g++   -I/home/jdw/projects/mprpc/src/include -I\"/home/jdw/projects/mprpc/(\" -I\"/home/jdw/projects/mprpc/)\" -I/home/jdw/projects/mprpc/example  -g   -o CMakeFiles/mprpc.dir/zookeeperutil.cc.o -c /home/jdw/projects/mprpc/src/zookeeperutil.cc",
+  "file": "/home/jdw/projects/mprpc/src/zookeeperutil.cc"
+},
+{
+  "directory": "/home/jdw/projects/mprpc/build/example/callee",
+  "command": "/usr/bin/g++   -I/home/jdw/projects/mprpc/src/include -I\"/home/jdw/projects/mprpc/(\" -I\"/home/jdw/projects/mprpc/)\" -I/home/jdw/projects/mprpc/example  -g   -o CMakeFiles/provider.dir/friendservice.cc.o -c /home/jdw/projects/mprpc/example/callee/friendservice.cc",
+  "file": "/home/jdw/projects/mprpc/example/callee/friendservice.cc"
+},
+{
+  "directory": "/home/jdw/projects/mprpc/build/example/callee",
+  "command": "/usr/bin/g++   -I/home/jdw/projects/mprpc/src/include -I\"/home/jdw/projects/mprpc/(\" -I\"/home/jdw/projects/mprpc/)\" -I/home/jdw/projects/mprpc/example  -g   -o CMakeFiles/provider.dir/__/friend.pb.cc.o -c /home/jdw/projects/mprpc/example/friend.pb.cc",
+  "file": "/home/jdw/projects/mprpc/example/friend.pb.cc"
+},
+{
+  "directory": "/home/jdw/projects/mprpc/build/example/caller",
+  "command": "/usr/bin/g++   -I/home/jdw/projects/mprpc/src/include -I\"/home/jdw/projects/mprpc/(\" -I\"/home/jdw/projects/mprpc/)\" -I/home/jdw/projects/mprpc/example  -g   -o CMakeFiles/consumer.dir/callfriendservice.cc.o -c /home/jdw/projects/mprpc/example/caller/callfriendservice.cc",
+  "file": "/home/jdw/projects/mprpc/example/caller/callfriendservice.cc"
+},
+{
+  "directory": "/home/jdw/projects/mprpc/build/example/caller",
+  "command": "/usr/bin/g++   -I/home/jdw/projects/mprpc/src/include -I\"/home/jdw/projects/mprpc/(\" -I\"/home/jdw/projects/mprpc/)\" -I/home/jdw/projects/mprpc/example  -g   -o CMakeFiles/consumer.dir/__/friend.pb.cc.o -c /home/jdw/projects/mprpc/example/friend.pb.cc",
+  "file": "/home/jdw/projects/mprpc/example/friend.pb.cc"
+}
+]
