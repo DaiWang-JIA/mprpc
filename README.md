@@ -53,65 +53,17 @@
     * `MprpcController` 实现了 `google::protobuf::RpcController` 接口。
     * 主要用于管理 RPC 调用过程中的状态，如 `Failed()`, `ErrorText()` 和 `SetFailed()`，方便客户端获取调用失败的原因。
 
-## 📋 如何使用
+项目使用 CMake 构建，核心依赖项在 CMakeLists.txt 中定义：
 
-使用 Protobuf 定义服务（如 `user.proto`），并开启 `option cc_generic_services=true;`。
+muduo_net
 
-### 1. 服务提供方 (Provider) 示例
+muduo_base
 
-实现 `proto` 中定义的服务接口，并将其发布。
+pthread
 
-```cpp
-// 摘自 userservice.cc
-#include "user.pb.h"
-#include "mprpcapplication.h"
-#include "rpcprovider.h"
+zookeeper_mt (多线程版 ZooKeyper 客户端库)
 
-// 继承 protoc 生成的 UserServiceRpc
-class UserServices : public fixbug::UserServiceRpc
-{
-public:
-    // 重写 Login 方法
-    void Login(::google::protobuf::RpcController* controller,
-               const ::fixbug::LoginRequest* request,
-               ::fixbug::LoginResponse* response,
-               ::google::protobuf::Closure* done)
-    {
-        // 1. 从 request 中获取参数
-        std::string name = request->name();
-        std::string pwd = request->pwd();
-
-        // 2. 执行本地业务
-        bool login_result = (name == "zhang san" && pwd == "123456");
-
-        // 3. 填充 response
-        fixbug::ResultCode* code = response->mutable_result();
-        code->set_errcode(0);
-        code->set_errmsg("");
-        response->set_success(login_result);
-
-        // 4. 执行回调
-        done->Run();
-    }
-};
-
-int main(int argc, char** argv)
-{
-    // 1. 初始化框架
-    MprpcApplication::Init(argc, argv);
-
-    // 2. 创建 Provider
-    Rpcprovider provider;
-
-    // 3. 发布服务
-    provider.NotifyService(new UserServices());
-
-    // 4. 启动服务，等待 RPC 调用
-    provider.Run();
-
-    return 0;
-}
-
+protobuf (需要 protoc 编译器和库)
 
 测试：       
 <img width="683" height="793" alt="image" src="https://github.com/user-attachments/assets/90bc6d19-aeea-4d02-bb04-f05ea538263a" />
