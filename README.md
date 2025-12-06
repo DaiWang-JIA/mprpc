@@ -73,5 +73,30 @@ protobuf (需要 protoc 编译器和库)
 
 
 
+## 🚀 Performance Benchmark (性能基准测试)   
+
+### Test Environment (测试环境)   
+* **OS**: Ubuntu 20.04 LTS (Virtual Machine)
+* **CPU**: 4 Cores    
+* **Network**: Localhost (Loopback)    
+* **Mode**: Short-Connection (New TCP connection for every request)   
+* **Payload**: Protobuf serialized `LoginRequest` (approx. 50 bytes)    
+
+### Methodology (测试方法)    
+Used a custom multi-threaded benchmark tool (`stress_test`) to simulate high-concurrency RPC calls. 
+* **Concurrency**: 4 Threads    
+* **Total Requests**: 8,000    
+* **Zookeeper**: Bypassed for pure RPC core performance testing (hardcoded service address)    
+
+### Results (测试结果)   
+| Metric | Value | Description |   
+| :--- | :--- | :--- |   
+| **QPS** | **4,000+** | Queries Per Second (Short-Connection Mode) |   
+| **Avg Latency** | ~0.4 ms | Time per request including TCP handshake |   
+| **Success Rate** | 100% | No packet loss or connection errors |      
+
+> **Analysis**: The QPS is currently limited by the TCP 3-way handshake overhead (Short Connection). In a production environment with **TCP Long-Connection Pooling**, performance is expected to increase significantly (estimated 5x-10x).
+
+<img width="606" height="150" alt="image" src="https://github.com/user-attachments/assets/ac8b44cf-a60f-4d0d-87c7-a5aeb9bd2fb9" />
 
                     
