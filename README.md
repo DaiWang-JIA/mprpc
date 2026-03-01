@@ -2,6 +2,56 @@
 
 `mprpc` 是一个基于 C++11 开发的轻量级、高性能、分布式的 RPC (远程过程调用) 通信框架。
 
+## 测试运行指南
+
+需要打开 **3 个终端窗口**，按顺序操作：
+
+### 终端 1：启动 ZooKeeper
+
+```bash
+export JAVA_HOME=/home/jdw3/local/src/jdk-11.0.21+9-jre
+export PATH=$JAVA_HOME/bin:$PATH
+cd /home/jdw3/local/src/zookeeper-3.4.14
+bin/zkServer.sh start
+```
+
+验证 ZooKeeper 运行中：
+```bash
+bin/zkServer.sh status
+# 应看到 Mode: standalone
+```
+
+### 终端 2：启动 Provider（RPC 服务端）
+
+```bash
+export LD_LIBRARY_PATH=/home/jdw3/local/usr/lib/x86_64-linux-gnu:/home/jdw3/local/usr/lib
+cd /home/jdw3/Desktop/Projects/mprpc/mprpc/bin
+./provider -i test.conf
+```
+
+你应该看到：
+```
+zookeeper_init success!
+znode create success ...path:/FriendServiceRpc
+znode create success ...path:/FriendServiceRpc/GetFriendList
+RpcProvider start service at ip:127.0.0.1 port:8000
+```
+
+### 终端 3：运行 Consumer（RPC 客户端）
+
+```bash
+export LD_LIBRARY_PATH=/home/jdw3/local/usr/lib/x86_64-linux-gnu:/home/jdw3/local/usr/lib
+cd /home/jdw3/Desktop/Projects/mprpc/mprpc/bin
+./consumer -i test.conf
+```
+
+你应该看到：
+```
+zookeeper_init success!
+rpc GetFriendList response success:
+index:1 name:gao yang
+index:2 name:liu hong
+index:3 name:wang shuo
 ```
 
 ### 验证日志修复
