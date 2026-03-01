@@ -2,6 +2,38 @@
 
 `mprpc` 是一个基于 C++11 开发的轻量级、高性能、分布式的 RPC (远程过程调用) 通信框架。
 
+```
+
+### 验证日志修复
+
+运行完后查看日志文件：
+```bash
+cat /home/jdw3/Desktop/Projects/mprpc/mprpc/bin/2026-03-01-log.txt
+```
+
+你会看到修复后的日志格式：
+```
+16:46:18 => [info] first log message!
+16:46:18 => [error] friendservice.cc:main:47
+16:46:18 => [info] service_name:FriendServiceRpc
+16:46:18 => [info] method_name:GetFriendList
+```
+
+注意对比旧日志（`2025-10-18-log.txt`）的改进：时间戳准确、级别标签正确、文件名有前导零。
+
+### 停止服务
+
+```bash
+# 停止 provider：在终端 2 按 Ctrl+C
+
+# 停止 ZooKeeper：在终端 1 执行
+export JAVA_HOME=/home/jdw3/local/src/jdk-11.0.21+9-jre
+export PATH=$JAVA_HOME/bin:$PATH
+cd /home/jdw3/local/src/zookeeper-3.4.14
+bin/zkServer.sh stop
+```
+
+
 框架核心依赖 [Muduo](https://github.com/chenshuo/muduo) 事件驱动网络库，使用 [Google Protobuf](https://github.com/protocolbuffers/protobuf) 作为消息序列化和接口定义语言（IDL），并集成 [Apache ZooKeeper](https://zookeeper.apache.org/) 作为服务注册与发现中心。
 
 ## 🚀 技术栈
