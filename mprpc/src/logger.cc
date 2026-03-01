@@ -10,38 +10,43 @@ Logger &Logger::GetInstance()
     return logger;
 }
 
-Logger:: Logger()
+Logger::Logger()
 {
     //启动写日志线程
-    std::thread writelogTask([&] (){
+    std::thread writelogTask([this](){
         for(;;)
         {
-            //获取当前日期，然后取日志信息，写入相应的日志文件 a+
-            time_t now=time(nullptr);
-            tm * nowtm=localtime(&now);
+            // 先Pop消息（可能阻塞），再获取当前时间，确保时间戳准确
+            std::string msg = m_lckQue.Pop();
 
+            // 获取当前时间（Pop之后，时间戳准确）
+            time_t now = time(nullptr);
+            tm nowtm;
+            localtime_r(&now, &nowtm);  // 使用线程安全版本
+
+            // 日志文件名使用前导零，方便排序
             char file_name[128];
-            sprintf(file_name,"%d-%d-%d-log.txt",nowtm->tm_year+1900,nowtm->tm_mon+1,nowtm->tm_mday);
+            sprintf(file_name, "%d-%02d-%02d-log.txt",
+                    nowtm.tm_year + 1900, nowtm.tm_mon + 1, nowtm.tm_mday);
 
-            FILE * pf=fopen(file_name,"a+");
+            FILE *pf = fopen(file_name, "a+");
             if (pf == nullptr)
             {
-                std::cout << "logger fiel : " << file_name << "open error!"<<std::endl;
+                std::cout << "logger file: " << file_name << " open error!" << std::endl;
                 exit(EXIT_FAILURE);
             }
 
-            std::string msg=m_lckQue.Pop();
+            // 时间戳使用前导零
+            char time_buf[128] = {0};
+            sprintf(time_buf, "%02d:%02d:%02d => ",
+                    nowtm.tm_hour,
+                    nowtm.tm_min,
+                    nowtm.tm_sec);
 
-            char time_buf[128]={0};
-            sprintf(time_buf,"%d:%d:%d=>[%s]=>",
-                nowtm->tm_hour,
-                nowtm->tm_min,
-                nowtm->tm_sec,
-            (m_loglevel==INFO ? "info":"error" ));
-            msg.insert(0,time_buf);
-            msg.append("\n");
+            // msg 已经自带 [info] 或 [error] 前缀（由宏传入）
+            std::string log_line = std::string(time_buf) + msg + "\n";
 
-            fputs(msg.c_str(),pf);
+            fputs(log_line.c_str(), pf);
             fclose(pf);
         }
     });
@@ -50,13 +55,7 @@ Logger:: Logger()
     writelogTask.detach();
 }
 
-// 设置日志级别
-void Logger::SetLogLevel(LogLevel level)
-{
-    m_loglevel=level;
-}
-
-// 写日志  把日志信息写入lockqueu缓冲区
+// 写日志  把日志信息写入lockqueue缓冲区（msg已包含级别前缀）
 void Logger::Log(std::string msg)
 {
     m_lckQue.Push(msg);

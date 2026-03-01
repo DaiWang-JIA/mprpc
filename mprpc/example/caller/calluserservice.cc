@@ -16,10 +16,16 @@ int main(int argc,char**argv)
     request.set_pwd("123456");
     //rpc方法的响应
     fixbug::LoginResponse response;
+    MprpcController controller;
     //发起rpc方法的调用  同步rpc调用过程
-    stub.Login(nullptr,&request,&response,nullptr); //RpcChannel->RpcChannel::callMethod  集中来做所有rpc方法调用的参数序列化和网络发送
+    stub.Login(&controller,&request,&response,nullptr); //RpcChannel->RpcChannel::callMethod  集中来做所有rpc方法调用的参数序列化和网络发送
 
     //一次rpc调用完成，读调用的结果
+    if (controller.Failed())
+    {
+        std::cout << "rpc Login call failed: " << controller.ErrorText() << std::endl;
+        return -1;
+    }
     if(0==response.result().errcode())
     {
         std::cout<<"rpc login response success:"<<response.success()<<std::endl;
@@ -38,8 +44,14 @@ int main(int argc,char**argv)
     fixbug::RegisterResponse  rsp;
 
     //已同步的方式发起rpc请求，等待返回结果
-    stub.Register(nullptr,&req,&rsp,nullptr);
+    controller.Reset();  // 重置controller以复用
+    stub.Register(&controller,&req,&rsp,nullptr);
     //一次rpc调用完成，读调用的结果
+    if (controller.Failed())
+    {
+        std::cout << "rpc Register call failed: " << controller.ErrorText() << std::endl;
+        return -1;
+    }
     if(0==rsp.result().errcode())
     {
         std::cout<<"rpc Register response success:"<<rsp.success()<<std::endl;

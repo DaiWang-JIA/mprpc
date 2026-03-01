@@ -99,7 +99,7 @@ std::string ZkClient::GetData(const char * path)
     int flag=zoo_get(m_zhandle,path,0,buffer,&bufferlen,nullptr);
     if(flag!=ZOK)
     {
-        std::cout<<"get znode error ... path:"<<std::endl;
+        std::cout<<"get znode error ... path:"<<path<<std::endl;
         return "";
     }
     else{

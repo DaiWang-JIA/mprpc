@@ -25,17 +25,15 @@ void Rpcprovider::NotifyService(google::protobuf::Service *service)
     //获取服务对象service的方法数量
     int methCount=pserviceDesc->method_count();
 
-    //std::cout<<"service_name:" <<service_name<<std::endl;
     LOG_INFO("service_name:%s",service_name.c_str());
 
     for(int i=0;i<methCount;++i)
     {
-        //获取了服务对象指定下标的服务方法的
+        //获取了服务对象指定下标的服务方法的描述
         const google::protobuf::MethodDescriptor* pmethodDesc=pserviceDesc->method(i);
         std::string method_name=pmethodDesc->name();
         service_info.m_methodMap.insert({method_name,pmethodDesc});
 
-        //std::cout<<"method_name:" <<method_name<<std::endl;
         LOG_INFO("method_name:%s",method_name.c_str());
     }
     service_info.m_service=service;
@@ -109,15 +107,31 @@ service_name  method_name  args   定义protobuf的message类型，进行数据�
 header_size(4个字节) +header_str+args_str
 */
 
-// 已建立连接用户的读写实践回调,如果远程有一个rpc的服务请求，那么OnMessage就会响应
+// 已建立连接用户的读写事件回调,如果远程有一个rpc的服务请求，那么OnMessage就会响应
 void Rpcprovider::OnMessage(const muduo::net::TcpConnectionPtr& conn,muduo::net::Buffer* buffer,muduo::Timestamp)
 {
-    // 网络上接受的远程rpc调用请求的字符流   Login args
+    // 网络上接收的远程rpc调用请求的字符流
     std::string recv_buf=buffer->retrieveAllAsString();
+
+    // 检查数据是否足够解析header_size（至少4字节）
+    if (recv_buf.size() < 4)
+    {
+        LOG_ERR("recv_buf size < 4, invalid rpc request");
+        conn->shutdown();
+        return;
+    }
 
     //从字符流中读取前四个字节的内容
     uint32_t header_size=0;
     recv_buf.copy((char*)&header_size,4,0);
+
+    // 检查数据是否足够包含完整的header
+    if (recv_buf.size() < 4 + header_size)
+    {
+        LOG_ERR("recv_buf size < 4 + header_size, incomplete rpc request");
+        conn->shutdown();
+        return;
+    }
 
     //根据header_size读取数据头的原始字符流,反序列化数据得到rpc请求的详细信息
     std::string rpc_header_str=recv_buf.substr(4,header_size);
@@ -135,8 +149,18 @@ void Rpcprovider::OnMessage(const muduo::net::TcpConnectionPtr& conn,muduo::net:
     else
     {
         //数据头反序列化失败
-        std::cout<<"rpc_header_str:"<<rpc_header_str<<"parse error"<<std::endl;
-        return ;
+        LOG_ERR("rpc_header_str: %s parse error", rpc_header_str.c_str());
+        conn->shutdown();
+        return;
+    }
+
+    // 检查数据是否足够包含完整的args
+    if (recv_buf.size() < 4 + header_size + args_size)
+    {
+        LOG_ERR("recv_buf incomplete: need %u bytes for args, have %zu",
+                args_size, recv_buf.size() - 4 - header_size);
+        conn->shutdown();
+        return;
     }
 
     //获取rpc方法参数的字符流数据
@@ -156,39 +180,44 @@ void Rpcprovider::OnMessage(const muduo::net::TcpConnectionPtr& conn,muduo::net:
     auto it=m_serviceMap.find(service_name);
     if(it==m_serviceMap.end())
     {
-        std::cout<<service_name<<"is not exist!"<<std::endl;
-        return ;
+        // 修复：服务不存在时，向客户端发送错误响应而不是静默丢弃
+        LOG_ERR("service %s is not exist!", service_name.c_str());
+        conn->shutdown();
+        return;
     }
 
 
     auto mit=it->second.m_methodMap.find(method_name);
     if(mit==it->second.m_methodMap.end())
     {
-        std::cout<<service_name<<":"<<method_name<<"is not exist!"<<std::endl;
-        return ;
+        // 修复：方法不存在时，向客户端发送错误响应而不是静默丢弃
+        LOG_ERR("service %s method %s is not exist!", service_name.c_str(), method_name.c_str());
+        conn->shutdown();
+        return;
     }
 
-    google ::protobuf::Service*service=it->second.m_service; //获取service对象
-    const google::protobuf::MethodDescriptor* method=mit->second;  //获取method对象
+    google::protobuf::Service *service=it->second.m_service; //获取service对象
+    const google::protobuf::MethodDescriptor *method=mit->second;  //获取method对象
 
-    //生成rpc方法调用的请求
-    google ::protobuf::Message* request=service->GetRequestPrototype(method).New();
+    //生成rpc方法调用的请求request和响应response（使用智能指针管理，防止内存泄漏）
+    std::shared_ptr<google::protobuf::Message> request(service->GetRequestPrototype(method).New());
     if(!request->ParseFromString(args_str))
     {
-        std::cout<<"request parse error,content:" <<args_str<<std::endl;
-        return ;
+        LOG_ERR("request parse error, content: %s", args_str.c_str());
+        conn->shutdown();
+        return;
     }
 
-    google ::protobuf::Message* response=service->GetResponsePrototype(method).New();
-
+    std::shared_ptr<google::protobuf::Message> response(service->GetResponsePrototype(method).New());
 
     //给下面的method方法的回调，绑定一个Closure的回调函数
+    // 注意：这里使用response裸指针传给Closure，因为shared_ptr生命周期会延续到回调完成
+    google::protobuf::Message *response_raw = response.get();
     google::protobuf::Closure *done=
-    google::protobuf::NewCallback<Rpcprovider,const muduo::net::TcpConnectionPtr&,google::protobuf::Message*>(this,&Rpcprovider::SendRpcsponse,conn,response);
+    google::protobuf::NewCallback<Rpcprovider,const muduo::net::TcpConnectionPtr&,google::protobuf::Message*>(this,&Rpcprovider::SendRpcsponse,conn,response_raw);
 
     //在框架上根据远端rpc请求调用方法
-    //new UserService().Login(controller,request,response,done)
-    service->CallMethod(method,nullptr,request,response,done);
+    service->CallMethod(method,nullptr,request.get(),response_raw,done);
 }
 
 // Closure的回调操作，用于序列化rpc的响应和网络发送
@@ -197,12 +226,12 @@ void Rpcprovider:: SendRpcsponse(const muduo::net::TcpConnectionPtr &conn, googl
     std::string response_str;
     if(response->SerializeToString(&response_str))  //response进行序列化
     {
-        //序列化成功后，通过网络吧rpc方法执行的结果发送会rpc的调用方
+        //序列化成功后，通过网络把rpc方法执行的结果发送回rpc的调用方
         conn->send(response_str);
     }
     else
     {
-        std::cout<<"seralize responae_str error!" <<std::endl;
+        LOG_ERR("serialize response_str error!");
     }
-    conn->shutdown();  //模拟http的短链接服务，由rpcprovoder主动断开连接
+    conn->shutdown();  //模拟http的短链接服务，由rpcprovider主动断开连接
 }

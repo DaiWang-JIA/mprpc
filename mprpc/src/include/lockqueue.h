@@ -15,6 +15,7 @@ public:
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         m_queue.push(data);
+        m_condvariable.notify_one();
     }
 
     //多个worker线程都会写日志queue

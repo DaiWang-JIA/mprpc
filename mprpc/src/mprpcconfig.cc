@@ -57,7 +57,7 @@ std::string MprpcConfig:: Load(const std::string &key)
     auto it=m_configMap.find(key);
     if(it==m_configMap.end())
     {
-        return " ";
+        return "";
     }
     return it->second;
 }

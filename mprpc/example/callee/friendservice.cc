@@ -29,7 +29,6 @@ public:
         std::vector<std::string> friendsList=GetFriendList(userid);
         response->mutable_result()->set_errcode(0);
         response->mutable_result()->set_errmsg("");
-        response->add_friends();
         for(std::string &name :friendsList)
         {
             std::string *p=response->add_friends();;

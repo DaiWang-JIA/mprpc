@@ -16,16 +16,11 @@ public:
     //获取日志单例
     static Logger& GetInstance();
 
-    //设置日志级别
-    void SetLogLevel(LogLevel level);
-
-    //写日志
+    //写日志，携带级别信息，避免数据竞争
     void Log(std::string msg);
 
 private:
-    int m_loglevel; //记录日志级别
     LockQueue<std::string> m_lckQue;  //日志缓冲队列
-
 
     //设置单例
     Logger();
@@ -35,42 +30,20 @@ private:
 };
 
 
-//定义宏
-// #define LOG_INFO(logmsgformat, ...) \
-//     do \
-//     {  \
-//         Logger & logger=Logger::GetInstance(); \
-//         logger.SetLogLevel(INFO); \
-//         char c[1024] ={0};
-//         snprintf(c,1024,logmsgformat,##__VA_ARGS__); \
-//         logger.Log(c); \
-//     }while(0);
-
-// #define LOG_ERR(logmsgformat, ...) \
-//     do \
-//     {  \
-//         Logger & logger=Logger::GetInstance(); \
-//         logger.SetLogLevel(ERROR); \
-//         char c[1024] ={0};
-//         snprintf(c,1024,logmsgformat,##__VA_ARGS__); \
-//         logger.Log(c); \
-//     }while(0);
-
+// 修复：日志级别随消息一起传递，避免多线程数据竞争
 #define LOG_INFO(logmsgformat, ...) \
     do { \
         Logger &logger = Logger::GetInstance(); \
-        logger.SetLogLevel(INFO); \
         char c[1024] = {0}; \
         snprintf(c, sizeof(c), logmsgformat, ##__VA_ARGS__); \
-        logger.Log(c); \
+        logger.Log(std::string("[info] ") + c); \
     } while(0)
 
 #define LOG_ERR(logmsgformat, ...) \
     do { \
         Logger &logger = Logger::GetInstance(); \
-        logger.SetLogLevel(ERROR); \
         char c[1024] = {0}; \
         snprintf(c, sizeof(c), logmsgformat, ##__VA_ARGS__); \
-        logger.Log(c); \
+        logger.Log(std::string("[error] ") + c); \
     } while(0)
 

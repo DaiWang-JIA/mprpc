@@ -20,7 +20,7 @@ int main(int argc,char**argv)
 
     MprpcController controller;
 
-    stub.GetFriendList(nullptr,&request,&response,nullptr); //RpcChannel->RpcChannel::callMethod  集中来做所有rpc方法调用的参数序列化和网络发送
+    stub.GetFriendList(&controller,&request,&response,nullptr); //RpcChannel->RpcChannel::callMethod  集中来做所有rpc方法调用的参数序列化和网络发送
 
     //一次rpc调用完成，读调用的结果
     if (controller.Failed())
