@@ -84,6 +84,34 @@ bin/zkServer.sh stop
 ```
 
 
+
+1) 设置运行时动态库路径
+export LD_LIBRARY_PATH=/home/jdw3/local/usr/lib/x86_64-linux-gnu:/home/jdw3/local/usr/lib:$LD_LIBRARY_PATH
+2) 重新构建
+cd /home/jdw3/Desktop/Projects/mprpc/mprpc
+bash autobuild.sh
+3) 启动 ZooKeeper（新终端1）
+export JAVA_HOME=/home/jdw3/local/src/jdk-11.0.21+9-jre
+export PATH=$JAVA_HOME/bin:$PATH
+cd /home/jdw3/local/src/zookeeper-3.4.14
+bin/zkServer.sh start
+4) 启动 Provider（新终端2）
+export LD_LIBRARY_PATH=/home/jdw3/local/usr/lib/x86_64-linux-gnu:/home/jdw3/local/usr/lib:$LD_LIBRARY_PATH
+cd /home/jdw3/Desktop/Projects/mprpc/mprpc/bin
+./provider -i test.conf
+5) 运行 Consumer（新终端3）
+export LD_LIBRARY_PATH=/home/jdw3/local/usr/lib/x86_64-linux-gnu:/home/jdw3/local/usr/lib:$LD_LIBRARY_PATH
+cd /home/jdw3/Desktop/Projects/mprpc/mprpc/bin
+./consumer -i test.conf
+停止命令：
+- Provider：Ctrl+C
+- ZooKeeper：
+export JAVA_HOME=/home/jdw3/local/src/jdk-11.0.21+9-jre
+export PATH=$JAVA_HOME/bin:$PATH
+cd /home/jdw3/local/src/zookeeper-3.4.14
+bin/zkServer.sh stop
+
+
 框架核心依赖 [Muduo](https://github.com/chenshuo/muduo) 事件驱动网络库，使用 [Google Protobuf](https://github.com/protocolbuffers/protobuf) 作为消息序列化和接口定义语言（IDL），并集成 [Apache ZooKeeper](https://zookeeper.apache.org/) 作为服务注册与发现中心。
 
 ## 🚀 技术栈
